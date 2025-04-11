@@ -38,5 +38,4 @@ FROM clientes c
 LEFT JOIN ventas v ON c.id = v.cliente_id AND v.fecha >= NOW() - INTERVAL '6 months'
 WHERE v.id IS NULL;
 
--- Validar que el cliente exista antes de realizar una venta
-SELECT * FROM validar_cliente_existe(4); 
+
