@@ -1,5 +1,5 @@
 -- Crear función para validar si un cliente existe y devolver un mensaje
-CREATE OR REPLACE FUNCTION validar_cliente_existe_mensaje(cliente_id INT) RETURNS TEXT AS $$
+CREATE OR REPLACE FUNCTION validar_cliente_existe(cliente_id INT) RETURNS TEXT AS $$
 DECLARE
     mensaje TEXT;
 BEGIN
@@ -43,7 +43,7 @@ SELECT * FROM verificar_stock(1, 5);
 
 
 
--- Procedimiento para procesar una venta
+
 CREATE OR REPLACE FUNCTION procesar_venta(cliente_id INT, producto_id INT, cantidad INT) 
 RETURNS TEXT AS $$
 DECLARE
@@ -51,27 +51,22 @@ DECLARE
     venta_id INT;
     stock_suficiente BOOLEAN;
 BEGIN
-    -- Verificar si el stock es suficiente
     stock_suficiente := verificar_stock(producto_id, cantidad);
     IF NOT stock_suficiente THEN
         RETURN 'Stock insuficiente para procesar la venta.';
     END IF;
-
-    -- Obtener el precio unitario del producto
+   
     SELECT precio INTO precio_unitario 
     FROM productos 
     WHERE id = producto_id;
-
-    -- Insertar la venta en la tabla ventas
+    
     INSERT INTO ventas (cliente_id) 
     VALUES (cliente_id) 
     RETURNING id INTO venta_id;
 
-    -- Insertar el detalle de la venta
     INSERT INTO detalleVentas (venta_id, producto_id, cantidad, precio_unitario) 
     VALUES (venta_id, producto_id, cantidad, precio_unitario);
 
-    -- Actualizar el stock del producto
     UPDATE productos 
     SET stock = stock - cantidad 
     WHERE id = producto_id;
